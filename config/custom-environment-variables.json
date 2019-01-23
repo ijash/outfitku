@@ -1,0 +1,4 @@
+{
+  "jwtPrivateKey": "outfitku_jwtkey",
+  "db": "mongodb://localhost/outfitku"
+}
