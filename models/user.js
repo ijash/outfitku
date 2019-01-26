@@ -1,9 +1,9 @@
 const JoiBase = require('joi');
 const JoiDate = require('joi-date-extensions');
+const config = require('config');
 Joi = JoiBase.extend(JoiDate)
 
 const mongoose = require('mongoose');
-const config = require('config');
 const jwt = require('jsonwebtoken');
 
 
@@ -63,7 +63,7 @@ userSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     validate: {
-      validator: function (v) {
+      validator: function(v) {
         const result = v.match(/^(.*\s+.*)+$/);
         return (result ? false : true)
       },
@@ -186,9 +186,15 @@ userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.methods.generateAuthToken = function () {
+userSchema.methods.generateAuthToken = function() {
   const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'));
   return token;
+};
+
+userSchema.methods.validatePhone = function() {
+  let num = this.phone;
+  num = num.split(" ").join("");
+  this.phone = num;
 };
 
 const User = mongoose.model('User', userSchema);
