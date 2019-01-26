@@ -1,7 +1,35 @@
-const Joi = require('joi');
+const JoiBase = require('joi');
+const JoiDate = require('joi-date-extensions');
+Joi = JoiBase.extend(JoiDate)
+
 const mongoose = require('mongoose');
 const config = require('config');
 const jwt = require('jsonwebtoken');
+
+
+// size schema for Joi & user schema
+const sizeOf = {
+  bodyMeasurment: { min: 1234, max: 1234 },
+  height: { min: 1234, max: 1234 },
+  weight: { min: 1234, max: 1234 },
+  chest: { min: 1234, max: 1234 },
+  centerBackNeckToWrist: { min: 1234, max: 1234 },
+  backWaistLength: { min: 1234, max: 1234 },
+  crossBack: { min: 1234, max: 1234 },
+  armLength: { min: 1234, max: 1234 },
+  upperArm: { min: 1234, max: 1234 },
+  armholeDepth: { min: 1234, max: 1234 },
+  waist: { min: 1234, max: 1234 },
+  hip: { min: 1234, max: 1234 },
+  headCircumference: { min: 1234, max: 1234 },
+  sockMeasurements: { min: 1234, max: 1234 },
+  footCircumference: { min: 1234, max: 1234 },
+  sockHeight: { min: 1234, max: 1234 },
+  totalFootLength: { min: 1234, max: 1234 },
+  handCircumference: { min: 1234, max: 1234 },
+  wristCircumference: { min: 1234, max: 1234 },
+  handLength: { min: 1234, max: 1234 },
+}
 
 userSchema = new mongoose.Schema({
   name: {
@@ -32,7 +60,15 @@ userSchema = new mongoose.Schema({
     required: true,
     minlength: 5,
     maxlength: 50,
-    unique: true
+    unique: true,
+    trim: true,
+    validate: {
+      validator: function (v) {
+        const result = v.match(/^(.*\s+.*)+$/);
+        return (result ? false : true)
+      },
+      message: props => `${props.value} musn't contain whitespace.`
+    }
   },
   address: {
     type: String,
@@ -40,118 +76,122 @@ userSchema = new mongoose.Schema({
     minlength: 5,
     maxlength: 500
   },
-  gender: {
+  sex: {
     type: String,
     required: true,
-    enum: ['M', 'F']
+    enum: ['m', 'f']
   },
   bodyMeasurment: {
     type: {
       height: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.bodyMeasurment.min,
+        maxlength: sizeOf.bodyMeasurment.max
       },
       weight: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.weight.min,
+        maxlength: sizeOf.weight.max
       },
       chest: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.chest.min,
+        maxlength: sizeOf.chest.max
       },
       centerBackNeckToWrist: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.centerBackNeckToWrist.min,
+        maxlength: sizeOf.centerBackNeckToWrist.max
       },
       backWaistLength: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.backWaistLength.min,
+        maxlength: sizeOf.backWaistLength.max
       },
       crossBack: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.crossBack.min,
+        maxlength: sizeOf.crossBack.max
       },
       armLength: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.armLength.min,
+        maxlength: sizeOf.armLength.max
       },
       upperArm: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.upperArm.min,
+        maxlength: sizeOf.upperArm.max
       },
       armholeDepth: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.armholeDepth.min,
+        maxlength: sizeOf.armholeDepth.max
       },
       waist: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.waist.min,
+        maxlength: sizeOf.waist.max
       },
       hip: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.hip.min,
+        maxlength: sizeOf.hip.max
       },
       headCircumference: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.headCircumference.min,
+        maxlength: sizeOf.headCircumference.max
       },
       sockMeasurements: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.sockMeasurements.min,
+        maxlength: sizeOf.sockMeasurements.max
       },
       footCircumference: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.footCircumference.min,
+        maxlength: sizeOf.footCircumference.max
       },
       sockHeight: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.sockHeight.min,
+        maxlength: sizeOf.sockHeight.max
       },
       totalFootLength: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.totalFootLength.min,
+        maxlength: sizeOf.totalFootLength.max
       },
       handCircumference: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.handCircumference.min,
+        maxlength: sizeOf.handCircumference.max
       },
       wristCircumference: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.wristCircumference.min,
+        maxlength: sizeOf.wristCircumference.max
       },
       handLength: {
         type: Number,
-        minlength: 1,
-        maxlength: 500
+        minlength: sizeOf.handLength.min,
+        maxlength: sizeOf.handLength.max
       }
     }
-  }
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
 });
 
-userSchema.methods.generateAuthToken = function() {
+userSchema.methods.generateAuthToken = function () {
   const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'));
   return token;
 };
 
-const User = mongoose.model('Ships', userSchema);
+const User = mongoose.model('User', userSchema);
 
 function validateUser(user) {
   const schema = {
@@ -159,28 +199,29 @@ function validateUser(user) {
     password: Joi.string().min(5).max(128).required(),
     email: Joi.string().min(5).max(255).required().email(),
     birthDate: Joi.date().format('YYYY-MM-DD').required(),
-    phone: Joi.string().min(5).max(50).required(),
+    phone: Joi.string().trim().min(5).max(20).required(),
     address: Joi.string().min(10).max(500),
-    gender: Joi.string().valid('M', 'F').required(),
-    height: Joi.number().min(1).max(500),
-    weight: Joi.number().min(1).max(500),
-    chest: Joi.number().min(1).max(500),
-    centerBackNeckToWrist: Joi.number().min(1).max(500),
-    backWaistLength: Joi.number().min(1).max(500),
-    crossBack: Joi.number().min(1).max(500),
-    armLength: Joi.number().min(1).max(500),
-    upperArm: Joi.number().min(1).max(500),
-    armholeDepth: Joi.number().min(1).max(500),
-    waist: Joi.number().min(1).max(500),
-    hip: Joi.number().min(1).max(500),
-    headCircumference: Joi.number().min(1).max(500),
-    sockMeasurements: Joi.number().min(1).max(500),
-    footCircumference: Joi.number().min(1).max(500),
-    sockHeight: Joi.number().min(1).max(500),
-    totalFootLength: Joi.number().min(1).max(500),
-    handCircumference: Joi.number().min(1).max(500),
-    wristCircumference: Joi.number().min(1).max(500),
-    handLength: Joi.number().min(1).max(500)
+    sex: Joi.string().valid('m', 'f').required().error(() => "sex must be a single character of 'm' or 'f'"),
+    //body measurement validation
+    height: Joi.number().min(sizeOf.height.min).max(sizeOf.height.max),
+    weight: Joi.number().min(sizeOf.weight.min).max(sizeOf.weight.max),
+    chest: Joi.number().min(sizeOf.chest.min).max(sizeOf.chest.max),
+    centerBackNeckToWrist: Joi.number().min(sizeOf.centerBackNeckToWrist.min).max(sizeOf.centerBackNeckToWrist.max),
+    backWaistLength: Joi.number().min(sizeOf.backWaistLength.min).max(sizeOf.backWaistLength.max),
+    crossBack: Joi.number().min(sizeOf.crossBack.min).max(sizeOf.crossBack.max),
+    armLength: Joi.number().min(sizeOf.armLength.min).max(sizeOf.armLength.max),
+    upperArm: Joi.number().min(sizeOf.upperArm.min).max(sizeOf.upperArm.max),
+    armholeDepth: Joi.number().min(sizeOf.armholeDepth.min).max(sizeOf.armholeDepth.max),
+    waist: Joi.number().min(sizeOf.waist.min).max(sizeOf.waist.max),
+    hip: Joi.number().min(sizeOf.hip.min).max(sizeOf.hip.max),
+    headCircumference: Joi.number().min(sizeOf.headCircumference.min).max(sizeOf.headCircumference.max),
+    sockMeasurements: Joi.number().min(sizeOf.sockMeasurements.min).max(sizeOf.sockMeasurements.max),
+    footCircumference: Joi.number().min(sizeOf.footCircumference.min).max(sizeOf.footCircumference.max),
+    sockHeight: Joi.number().min(sizeOf.sockHeight.min).max(sizeOf.sockHeight.max),
+    totalFootLength: Joi.number().min(sizeOf.totalFootLength.min).max(sizeOf.totalFootLength.max),
+    handCircumference: Joi.number().min(sizeOf.handCircumference.min).max(sizeOf.handCircumference.max),
+    wristCircumference: Joi.number().min(sizeOf.wristCircumference.min).max(sizeOf.wristCircumference.max),
+    handLength: Joi.number().min(sizeOf.handLength.min).max(sizeOf.handLength.max)
   };
   return Joi.validate(user, schema);
 };
