@@ -1,15 +1,14 @@
 const JoiBase = require('joi');
 const JoiDate = require('joi-date-extensions');
+const config = require('config');
 Joi = JoiBase.extend(JoiDate)
 
 const mongoose = require('mongoose');
-const config = require('config');
 const jwt = require('jsonwebtoken');
 
 
 // size schema for Joi & user schema
 const sizeOf = {
-  bodyMeasurment: { min: 1234, max: 1234 },
   height: { min: 1234, max: 1234 },
   weight: { min: 1234, max: 1234 },
   chest: { min: 1234, max: 1234 },
@@ -85,8 +84,8 @@ userSchema = new mongoose.Schema({
     type: {
       height: {
         type: Number,
-        minlength: sizeOf.bodyMeasurment.min,
-        maxlength: sizeOf.bodyMeasurment.max
+        minlength: sizeOf.height.min,
+        maxlength: sizeOf.height.max
       },
       weight: {
         type: Number,
@@ -189,6 +188,12 @@ userSchema = new mongoose.Schema({
 userSchema.methods.generateAuthToken = function () {
   const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'));
   return token;
+};
+
+userSchema.methods.validatePhone = function () {
+  let num = this.phone;
+  num = num.split(" ").join("");
+  this.phone = num;
 };
 
 const User = mongoose.model('User', userSchema);
