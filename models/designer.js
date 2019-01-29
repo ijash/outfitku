@@ -1,6 +1,5 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
-const { userSchema } = require('./user');
 const config = require('config');
 
 const root = config.get('img');
@@ -52,14 +51,11 @@ designerSchema = new mongoose.Schema({
     }]
   },
   expertise: {
-    //TO DO: make this linked to category schema, so user can't define their own category
     type: Array,
-    validate: {
-      validator: function (v) {
-        const result = v && v.length > 0;
-        return (result ? true : false)
-      },
-      message: `insert at least one expertise.`
+    name: {
+      type: String,
+      minlength: 5,
+      maxlength: 50
     }
   },
   works: [{
@@ -75,7 +71,7 @@ designerSchema = new mongoose.Schema({
         get: location => `${root}${location}`
       },
     })
-  },],
+  }, ],
 });
 
 const Designer = mongoose.model('Designer', designerSchema);
@@ -87,7 +83,7 @@ function validateDesigner(designer) {
     businessEmail: Joi.string().min(5).max(255).email(),
     ownerId: Joi.objectId().required(),
     maintainerId: Joi.array().items(Joi.objectId()),
-    expertise: Joi.array().items(Joi.string().required()),
+    expertise: Joi.array().items(Joi.objectId().required())
   };
   return Joi.validate(designer, schema);
 };
