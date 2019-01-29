@@ -6,6 +6,7 @@ Joi = JoiBase.extend(JoiDate)
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
+const fileCDN = config.get('img')
 
 // size schema for Joi & user schema
 const sizeOf = {
@@ -37,6 +38,12 @@ userSchema = new mongoose.Schema({
     minlength: 5,
     maxlength: 50
   },
+  profPict: {
+    type: String,
+    get: location => `${fileCDN}${location}`,
+    trim: true,
+    maxlength: 4096
+  },
   password: {
     type: String,
     required: true,
@@ -62,7 +69,7 @@ userSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     validate: {
-      validator: function (v) {
+      validator: function(v) {
         const result = v.match(/^(.*\s+.*)+$/);
         return (result ? false : true)
       },
@@ -185,12 +192,12 @@ userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.methods.generateAuthToken = function () {
+userSchema.methods.generateAuthToken = function() {
   const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'));
   return token;
 };
 
-userSchema.methods.validatePhone = function () {
+userSchema.methods.validatePhone = function() {
   let num = this.phone;
   num = num.split(" ").join("");
   this.phone = num;
@@ -224,9 +231,10 @@ function validateUser(user) {
 
   const schema = {
     name: Joi.string().min(5).max(50).required(),
+    profPict: Joi.string().max(4096),
     password: Joi.string().min(5).max(128).required(),
     email: Joi.string().min(5).max(255).required().email(),
-    birthDate: Joi.date().required(),//MM-DD-YYYY
+    birthDate: Joi.date().required(), //MM-DD-YYYY
     phone: Joi.string().trim().min(5).max(20).required(),
     address: Joi.string().min(10).max(500),
     sex: Joi.string().valid('m', 'f').required().error(() => "sex must be a single character of 'm' or 'f'"),
