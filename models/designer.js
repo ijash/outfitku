@@ -1,6 +1,10 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
 const { userSchema } = require('./user');
+const config = require('config');
+
+const root = config.get('img');
+
 
 designerSchema = new mongoose.Schema({
   businessName: {
@@ -8,6 +12,10 @@ designerSchema = new mongoose.Schema({
     required: true,
     minlength: 5,
     maxlength: 50
+  },
+  picture: {
+    type: String,
+    get: location => `${root}${location}`
   },
   businessAddress: {
     type: String,
@@ -27,12 +35,14 @@ designerSchema = new mongoose.Schema({
           type: String,
           required: true,
           minlength: 5,
-          maxlength: 50
+          maxlength: 50,
+
         }
       })
     },
     maintainers: [{
       type: new mongoose.Schema({
+        _id: mongoose.Types.ObjectId,
         name: {
           type: String,
           minlength: 5,
@@ -42,15 +52,30 @@ designerSchema = new mongoose.Schema({
     }]
   },
   expertise: {
+    //TO DO: make this linked to category schema, so user can't define their own category
     type: Array,
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         const result = v && v.length > 0;
         return (result ? true : false)
       },
       message: `insert at least one expertise.`
     }
-  }
+  },
+  works: [{
+    type: new mongoose.Schema({
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 3
+      },
+      displayImage: {
+        type: String,
+        get: location => `${root}${location}`
+      },
+    })
+  },],
 });
 
 const Designer = mongoose.model('Designer', designerSchema);
@@ -60,9 +85,9 @@ function validateDesigner(designer) {
     businessName: Joi.string().min(5).max(50).required(),
     businessAddress: Joi.string().min(5).max(500),
     businessEmail: Joi.string().min(5).max(255).email(),
-    userOwnerId: Joi.objectId(),
-    userMaintainerId: Joi.array().items(Joi.objectId()),
-    expertise: Joi.array().items(Joi.string().required())
+    ownerId: Joi.objectId().required(),
+    maintainerId: Joi.array().items(Joi.objectId()),
+    expertise: Joi.array().items(Joi.string().required()),
   };
   return Joi.validate(designer, schema);
 };

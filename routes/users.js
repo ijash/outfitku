@@ -4,13 +4,17 @@ const express = require('express');
 const router = express.Router();
 const _ = require('lodash');
 const { User, validate } = require('../models/user');
+const { Designer } = require('../models/designer');
+
 
 router.get('/', auth, async (req, res) => {
-  console.log('fill in with task....')
-  const result = await User.find();
-  const users = _.omit(result, ['__v', ])
-  res.send(users);
+  const result = await User.find()
+    .select('-__v')
+    .sort({ name: 1 });
+
+  res.send(result);
 });
+
 router.post('/', async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -28,6 +32,34 @@ router.post('/', async (req, res) => {
 
   const token = user.generateAuthToken();
   res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'email']));
+});
+
+router.get('/me', auth, async (req, res) => {
+  const user = await User.findById(req.user._id).select('-password -__v');
+  res.send(user);
+});
+
+router.get('/:id', async (req, res) => {
+  const user = await User.findById(req.params.id).select('-password -__v');
+  if (!user) return res.status(404).send('User with the given id not found')
+  res.send(user);
+});
+
+router.delete('/:id', auth, async (req, res) => {
+  const user = await User.findById(req.params.id)
+  if (!user) return res.status(404).send('User with the given id not found');
+
+  if (!(req.params.id == req.user._id)) return res.status(403).send('cannot delete other user.');
+
+  const deletedUser = await User.findByIdAndRemove(req.params.id);
+
+  await Designer.updateMany(
+    { 'account.maintainers': { $elemMatch: { _id: req.params.id } } },
+    { $pull: { 'account.maintainers': { _id: req.params.id } } },
+  );
+
+  res.send(`user ${deletedUser.name} with ID: ${deletedUser._id} successfully deleted`);
+
 });
 
 module.exports = router;

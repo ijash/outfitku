@@ -5,22 +5,42 @@ const _ = require('lodash');
 const { Designer, validate } = require('../models/designer');
 const { User } = require('../models/user');
 
+router.get('/', async (req, res) => {
+
+    //TO DO: exclude mantainer if empty
+    const designers = await Designer.find()
+        .select('-__v')
+        .sort({ name: 1 });
+    res.send(designers)
+});
+
+router.get('/:id', async (req, res) => {
+
+    //TO DO: exclude mantainer if empty
+    const designer = await Designer.findById(req.params.id).select('-__v');
+    res.send(designer)
+});
+
 router.post('/', async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const userOwner = await User.findById(req.body.userOwnerId);
-    let val = req.body.userMaintainerId
+    const owner = await User.findById(req.body.ownerId);
+    if (!owner) return res.status(404).send('no user found with the given ID');
 
+    const businessAccount = await Designer.findOne({ "account.owner._id": owner._id });
+    if (businessAccount) return res.status(400).send('user may own only one business account.');
+    //TO DO: give 'not found' warning for wrong maintainer ID
+    const maintainers = await User.find({ '_id': { $in: req.body.maintainerId } }).select('_id name')
 
-    let maintainers = await User.find({ '_id': { $in: val } }).select('_id name')
+    console.log(maintainers)
 
-    let designer = new Designer({
+    const designer = new Designer({
         businessName: req.body.businessName,
         businessAddress: req.body.businessAddress,
         businessEmail: req.body.businessEmail,
         account: {
-            owner: userOwner,
+            owner: owner,
             maintainers: maintainers
         },
         expertise: req.body.expertise
@@ -28,7 +48,7 @@ router.post('/', async (req, res) => {
 
     await designer.save();
 
-    res.send(designer.account)
+    res.send(designer)
 });
 
 module.exports = router;
