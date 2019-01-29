@@ -226,7 +226,7 @@ function validateUser(user) {
     name: Joi.string().min(5).max(50).required(),
     password: Joi.string().min(5).max(128).required(),
     email: Joi.string().min(5).max(255).required().email(),
-    birthDate: Joi.date().format('YYYY-MM-DD').required(),
+    birthDate: Joi.date().required(),//MM-DD-YYYY
     phone: Joi.string().trim().min(5).max(20).required(),
     address: Joi.string().min(10).max(500),
     sex: Joi.string().valid('m', 'f').required().error(() => "sex must be a single character of 'm' or 'f'"),
