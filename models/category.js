@@ -1,5 +1,5 @@
 //TO DO: use category schema for future expertise category in designers or item
-
+//TO DO: use this model to refer textile. and give a design picture.
 const Joi = require('joi');
 const mongoose = require('mongoose');
 
