@@ -54,4 +54,43 @@ router.post('/', async (req, res) => {
     res.send(designer)
 });
 
+router.put('/:id', auth, async (req, res) => {
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+    const designer = await Designer.findById(req.params.id);
+    if (!designer) return res.status(404).send('No designer found with the given ID');
+
+    if (!(designer.account.owner._id == req.user._id)) return res.status(403).send('Unauthorized to modify this business.');
+
+
+    const updater = {
+        businessName: req.body.businessName,
+        picture: req.body.picture,
+        businessAddress: req.body.businessAddress,
+        businessEmail: req.body.businessEmail,
+    }
+
+    Object.assign(designer, updater);
+    const result = await designer.save();
+    return res.send(result);
+
+});
+//TO DO: add route /:id/maintainer
+//TO DO: add route /:id/picture
+
+router.delete('/:id', auth, async (req, res) => {
+    const designer = await Designer.findById(req.params.id);
+
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+
+    if (!designer) return res.status(404).send('No designer found with the given ID');
+
+    if (!(designer.account.owner._id == req.user._id)) return res.status(403).send('Unauthorized to remove this business.');
+
+    const deletedDesigner = await Designer.findByIdAndRemove(req.params.id);
+
+    res.send(`Business Account with ${deletedDesigner.name} with ID: ${deletedDesigner._id} successfully deleted : ${deletedDesigner}`);
+});
+
 module.exports = router;
