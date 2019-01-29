@@ -62,4 +62,26 @@ router.delete('/:id', auth, async (req, res) => {
 
 });
 
+router.put('/:id', auth, async (req, res) => {
+  const { error } = validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  if (!(req.params.id == req.user._id)) return res.status(403).send('cannot modify other user.');
+  const user = await User.findByIdAndUpdate(req.params.id,
+    {
+      name: req.body.name,
+      password: req.body.password,
+      email: req.body.email,
+      birthDate: req.body.birthDate,
+      phone: req.body.phone,
+      address: req.body.address,
+      sex: req.body.sex,
+      bodyMeasurement: req.body.bodyMeasurement,
+    }, { new: true });
+  if (!user) return res.status(404).send('The user with the given ID was not found.');
+
+  res.send(user);
+});
+
+
 module.exports = router;

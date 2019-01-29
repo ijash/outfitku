@@ -199,15 +199,8 @@ userSchema.methods.validatePhone = function () {
 const User = mongoose.model('User', userSchema);
 
 function validateUser(user) {
-  const schema = {
-    name: Joi.string().min(5).max(50).required(),
-    password: Joi.string().min(5).max(128).required(),
-    email: Joi.string().min(5).max(255).required().email(),
-    birthDate: Joi.date().format('YYYY-MM-DD').required(),
-    phone: Joi.string().trim().min(5).max(20).required(),
-    address: Joi.string().min(10).max(500),
-    sex: Joi.string().valid('m', 'f').required().error(() => "sex must be a single character of 'm' or 'f'"),
-    //body measurement validation
+
+  const bodyMeasurmentSchema = {
     height: Joi.number().min(sizeOf.height.min).max(sizeOf.height.max),
     weight: Joi.number().min(sizeOf.weight.min).max(sizeOf.weight.max),
     chest: Joi.number().min(sizeOf.chest.min).max(sizeOf.chest.max),
@@ -226,7 +219,19 @@ function validateUser(user) {
     totalFootLength: Joi.number().min(sizeOf.totalFootLength.min).max(sizeOf.totalFootLength.max),
     handCircumference: Joi.number().min(sizeOf.handCircumference.min).max(sizeOf.handCircumference.max),
     wristCircumference: Joi.number().min(sizeOf.wristCircumference.min).max(sizeOf.wristCircumference.max),
-    handLength: Joi.number().min(sizeOf.handLength.min).max(sizeOf.handLength.max)
+    handLength: Joi.number().min(sizeOf.handLength.min).max(sizeOf.handLength.max),
+  }
+
+  const schema = {
+    name: Joi.string().min(5).max(50).required(),
+    password: Joi.string().min(5).max(128).required(),
+    email: Joi.string().min(5).max(255).required().email(),
+    birthDate: Joi.date().format('YYYY-MM-DD').required(),
+    phone: Joi.string().trim().min(5).max(20).required(),
+    address: Joi.string().min(10).max(500),
+    sex: Joi.string().valid('m', 'f').required().error(() => "sex must be a single character of 'm' or 'f'"),
+    bodyMeasurment: Joi.object().keys(bodyMeasurmentSchema),
+
   };
   return Joi.validate(user, schema);
 };
