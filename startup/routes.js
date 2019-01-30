@@ -4,6 +4,7 @@ const designers = require('../routes/designers');
 const items = require('../routes/items');
 const orders = require('../routes/orders');
 const users = require('../routes/users');
+const categories = require('../routes/categories');
 
 module.exports = function (app) {
   app.use(express.json());
@@ -12,4 +13,5 @@ module.exports = function (app) {
   app.use('/api/items', items);
   app.use('/api/orders', orders);
   app.use('/api/users', users);
+  app.use('/api/categories', categories);
 }
