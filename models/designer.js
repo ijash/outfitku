@@ -71,7 +71,7 @@ designerSchema = new mongoose.Schema({
         get: location => `${root}${location}`
       },
     })
-  }, ],
+  },],
 });
 
 const Designer = mongoose.model('Designer', designerSchema);
@@ -87,6 +87,13 @@ function validateDesigner(designer) {
   };
   return Joi.validate(designer, schema);
 };
+function validateMaintainer(maintainer) {
+  const schema = {
+    id: Joi.objectId(),
+  };
+  return Joi.validate(maintainer, schema);
+};
 
 exports.Designer = Designer;
 exports.validate = validateDesigner;
+exports.validateMaintainer = validateMaintainer;
