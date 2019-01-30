@@ -8,25 +8,31 @@ const orderSchema = new mongoose.Schema({
   user: {
     type: new mongoose.Schema({
       _id: mongoose.Types.ObjectId,
-      name: String,
-      minlength: 5,
-      maxlength: 50
+      name: {
+        type: String,
+        minlength: 5,
+        maxlength: 50
+      }
     })
   },
   designer: {
     type: new mongoose.Schema({
       _id: mongoose.Types.ObjectId,
-      name: String,
-      minlength: 5,
-      maxlength: 50
+      name: {
+        type: String,
+        minlength: 5,
+        maxlength: 50
+      }
     })
   },
   category: {
     type: new mongoose.Schema({
       _id: mongoose.Types.ObjectId,
-      name: String,
-      minlength: 5,
-      maxlength: 50
+      name: {
+        type: String,
+        minlength: 5,
+        maxlength: 50
+      }
     })
   },
   dateIssued: {
@@ -88,7 +94,7 @@ const orderSchema = new mongoose.Schema({
   },
   dueDate: {
     type: Date,
-    required: true // kasih max di joi
+    // required: true // kasih max di joi
   },
   finishedDate: Date,
   isActive: {
@@ -127,18 +133,18 @@ function validateOrder(order) {
   }
 
   const schema = {
-    userId: Joi.objectId().required(),
-    designerId: Joi.objectId().required(),
-    category: Joi.objectId().required(),
-    dateIssued: Joi.date(), //MM-DD-YYYY
-    price: Joi.object.keys(priceSchema),
+    // userId: Joi.objectId().required(),
+    designer: Joi.objectId().required(),
+    category: Joi.objectId(),
+    // dateIssued: Joi.date(), //MM-DD-YYYY
+    // price: Joi.object.keys(priceSchema),
     // chatLog
-    image: Joi.object.key(imageSchema),
-    dueDate: Joi.date().required(),
+    image: Joi.object().keys(imageSchema),
+    dueDate: Joi.date(),
     finishedDate: Joi.date(),
     isActive: Joi.boolean(),
     isPublishable: Joi.boolean(),
-    material: Joi.objectId().required()
+    material: Joi.objectId()
   };
 
   return Joi.validate(order, schema);
