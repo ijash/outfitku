@@ -27,8 +27,8 @@ router.post('/', async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-    const owner = await User.findById(req.user._id);
-    if (!owner) return res.status(404).send('no user found with the given ID');
+  const owner = await User.findById(req.user._id);
+  if (!owner) return res.status(404).send('no user found with the given ID');
 
   const category = await Category.find({ '_id': { $in: req.body.expertise } }).select('name -_id')
   if (category.length < 1) return res.status(404).send('no category found with the given ID');
@@ -50,23 +50,9 @@ router.post('/', async (req, res) => {
     expertise: category
   }
 
-  // let test = {
-  //   businessName: "josefeb"
-  // }
-
-  if (req.body.full) {
-    designerSchema.add({ full: String })
-    designer.full = req.body.full
-  }
-
-  designerSchema.add({ full: String })
-  designer.full = req.body.full
-
-  // test = Object.assign(designerSchema, test)
-
   designer = new Designer(designer)
 
-  // await designer.save();
+  await designer.save();
 
   res.send(designer)
 });
@@ -77,7 +63,7 @@ router.put('/:id', auth, async (req, res) => {
   const designer = await Designer.findById(req.params.id);
   if (!designer) return res.status(404).send('No designer found with the given ID');
 
-    if (!(designer.account.owner._id == req.user._id)) return res.status(403).send('Unauthorized to modify this business');
+  if (!(designer.account.owner._id == req.user._id)) return res.status(403).send('Unauthorized to modify this business');
 
 
   const updater = {
@@ -94,50 +80,50 @@ router.put('/:id', auth, async (req, res) => {
 });
 //DONE: add route post /:id/maintainer
 router.post('/:id/maintainers', auth, async (req, res) => {
-    const { error } = validateMaintainer(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+  const { error } = validateMaintainer(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
-    const designer = await Designer.findById(req.params.id);
-    if (!designer) return res.status(404).send('No designer found with the given ID');
+  const designer = await Designer.findById(req.params.id);
+  if (!designer) return res.status(404).send('No designer found with the given ID');
 
-    if (!(designer.account.owner._id == req.user._id)) return res.status(403).send('Unauthorized to modify this business');
+  if (!(designer.account.owner._id == req.user._id)) return res.status(403).send('Unauthorized to modify this business');
 
-    let maintainer = await User.findById(req.body.id);
-    if (!maintainer) return res.status(404).send('no user found with the given ID');
+  let maintainer = await User.findById(req.body.id);
+  if (!maintainer) return res.status(404).send('no user found with the given ID');
 
-    maintainer = _.pick(maintainer, ['_id', 'name'])
-    const isDuplicate = designer.account.maintainers.find(foundMaintainer => {
-        if (foundMaintainer._id.equals(maintainer._id)) return true;
-        return false;
-    });
-    if (isDuplicate) return res.status(409).send('duplicate entry not allowed')
+  maintainer = _.pick(maintainer, ['_id', 'name'])
+  const isDuplicate = designer.account.maintainers.find(foundMaintainer => {
+    if (foundMaintainer._id.equals(maintainer._id)) return true;
+    return false;
+  });
+  if (isDuplicate) return res.status(409).send('duplicate entry not allowed')
 
-    designer.account.maintainers.push(_.pick(maintainer, ['_id', 'name']))
+  designer.account.maintainers.push(_.pick(maintainer, ['_id', 'name']))
 
-    designer.save();
+  designer.save();
 
-    res.send(designer.account.maintainers)
+  res.send(designer.account.maintainers)
 })
 //DONE: add route delete /:id/maintainer
 router.delete('/:id/maintainers', auth, async (req, res) => {
-    const { error } = validateMaintainer(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+  const { error } = validateMaintainer(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
-    const designer = await Designer.findById(req.params.id);
-    if (!designer) return res.status(404).send('No designer found with the given ID');
+  const designer = await Designer.findById(req.params.id);
+  if (!designer) return res.status(404).send('No designer found with the given ID');
 
-    if (!(designer.account.owner._id == req.user._id)) return res.status(403).send('Unauthorized to modify this business');
+  if (!(designer.account.owner._id == req.user._id)) return res.status(403).send('Unauthorized to modify this business');
 
-    let maintainer = designer.account.maintainers.find(query => {
-        return query._id.equals(req.body.id)
-    })
-    if (!maintainer) return res.status(404).send('no maintainer found with the given ID');
+  let maintainer = designer.account.maintainers.find(query => {
+    return query._id.equals(req.body.id)
+  })
+  if (!maintainer) return res.status(404).send('no maintainer found with the given ID');
 
-    designer.account.maintainers.pull(_.pick(maintainer, ['_id', 'name']))
+  designer.account.maintainers.pull(_.pick(maintainer, ['_id', 'name']))
 
-    designer.save();
+  designer.save();
 
-    res.send(maintainer)
+  res.send(maintainer)
 })
 
 //TO DO: add route /:id/picture
@@ -150,7 +136,7 @@ router.delete('/:id', auth, async (req, res) => {
 
   if (!designer) return res.status(404).send('No designer found with the given ID');
 
-    if (!(designer.account.owner._id == req.user._id)) return res.status(403).send('Unauthorized to remove this business');
+  if (!(designer.account.owner._id == req.user._id)) return res.status(403).send('Unauthorized to remove this business');
 
   const deletedDesigner = await Designer.findByIdAndRemove(req.params.id);
 
