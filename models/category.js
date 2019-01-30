@@ -1,5 +1,5 @@
 //DONE: use category schema for future expertise category in designers or item
-//TO DO: use this model to refer textile. and give a design picture.
+//DONE: give a design picture.
 const Joi = require('joi');
 const mongoose = require('mongoose');
 
@@ -8,12 +8,14 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 3,
-    maxlength: 50
+    maxlength: 50,
+    trim: true
   },
   mainImage: {
     type: String,
     get: location => `${root}${location}`,
-    maxlength: 4096
+    maxlength: 4096,
+    trim: true
   },
 });
 

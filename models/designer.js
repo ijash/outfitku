@@ -74,7 +74,7 @@ designerSchema = new mongoose.Schema({
   },],
 });
 
-const Designer = mongoose.model('Designer', designerSchema);
+let Designer = mongoose.model('Designer', designerSchema);
 
 function validateDesigner(designer) {
   const schema = {
@@ -83,7 +83,8 @@ function validateDesigner(designer) {
     businessEmail: Joi.string().min(5).max(255).email(),
     ownerId: Joi.objectId().required(),
     maintainerId: Joi.array().items(Joi.objectId()),
-    expertise: Joi.array().items(Joi.objectId().required())
+    expertise: Joi.array().items(Joi.objectId().required()),
+    full: Joi.string()
   };
   return Joi.validate(designer, schema);
 };
@@ -94,6 +95,7 @@ function validateMaintainer(maintainer) {
   return Joi.validate(maintainer, schema);
 };
 
+exports.designerSchema = designerSchema;
 exports.Designer = Designer;
 exports.validate = validateDesigner;
 exports.validateMaintainer = validateMaintainer;

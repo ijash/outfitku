@@ -6,7 +6,7 @@ const orders = require('../routes/orders');
 const users = require('../routes/users');
 const categories = require('../routes/categories');
 
-module.exports = function (app) {
+module.exports = function(app) {
   app.use(express.json());
   app.use('/api/auth', auth);
   app.use('/api/designers', designers);

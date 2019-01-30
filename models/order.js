@@ -47,7 +47,7 @@ const orderSchema = new mongoose.Schema({
       name: String
     }),
     message: new mongoose.Schema({
-      messageType: ['form', 'text', 'payment', 'image', {
+      messageType: ['form-init', 'form-revision', 'text', 'payment', 'image', {
         type: 'text',
         date: Date,
         body: String
