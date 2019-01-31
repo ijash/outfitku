@@ -11,7 +11,8 @@ const textileSchema = new mongoose.Schema({
   comment: {
     type: String,
     maxlength: 500
-  }
+  },
+  //TO DO: picture url for textile
 });
 
 const Textile = mongoose.model('textile', textileSchema);
