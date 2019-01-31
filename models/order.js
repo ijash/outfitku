@@ -1,6 +1,11 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
 const config = require('config');
+let { messageSchema, formInitSchema, paymentSchema, formRevisionSchema } = require('./message');
+
+messageSchema.add(paymentSchema);
+messageSchema.add(formInitSchema);
+messageSchema.add(formRevisionSchema);
 
 const fileCDN = config.get('img')
 
@@ -18,7 +23,7 @@ const orderSchema = new mongoose.Schema({
   designer: {
     type: new mongoose.Schema({
       _id: mongoose.Types.ObjectId,
-      name: {
+      businessName: {
         type: String,
         minlength: 5,
         maxlength: 50
@@ -50,15 +55,10 @@ const orderSchema = new mongoose.Schema({
   chatLog: [{
     seqNum: Number,
     from: new mongoose.Schema({
-      name: String
+      name: String,
+      businessName: String
     }),
-    message: new mongoose.Schema({
-      messageType: ['form-init', 'form-revision', 'text', 'payment', 'image', {
-        type: 'text',
-        date: Date,
-        body: String
-      }], //kayaknya harus di pisah
-    })
+    message: messageSchema
   }],
   image: {
     proposition: {
@@ -138,7 +138,9 @@ function validateOrder(order) {
     category: Joi.objectId(),
     // dateIssued: Joi.date(), //MM-DD-YYYY
     // price: Joi.object.keys(priceSchema),
-    // chatLog
+    seqNum: Joi.number(),
+    from: Joi.objectId(),
+    message: Joi.objectId(),
     image: Joi.object().keys(imageSchema),
     dueDate: Joi.date(),
     finishedDate: Joi.date(),

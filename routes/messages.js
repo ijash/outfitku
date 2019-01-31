@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
 
   message = new Message(message);
 
-  // await message.save();
+  await message.save();
 
   res.send(message)
 });
