@@ -1,48 +1,60 @@
-const { Message, Payment, FormInit, FormRevision, validate, messageSchema, formInitSchema, formRevisionSchema, paymentSchema } = require('../models/message');
+const {
+  Message,
+  validateMessage,
+  validateFormInit,
+  validateFormRevision,
+  validatePayment,
+  messageSchema,
+  formInitSchema,
+  formRevisionSchema,
+  paymentSchema
+} = require('../models/message');
+
 const express = require('express');
 const mongoose = require('mongoose')
 const router = express.Router();
+// const validateMessage = require('../middleware/validateMessage'); // funciton dipindahin ke middleware
 
 router.post('/', async (req, res) => {
-
-  const { error } = validate(req.body);
+  const { error } = validateMessage(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  let firstMessage = {
+  let message = {
     messageType: req.body.messageType,
+    content: req.body.content
   };
 
-  var display = function(schema) {
+  const insertMessage = (schema) => {
     key1 = Object.keys(schema)[0]
     key2 = Object.keys(schema.body)[0]
     key = `${key1}.${key2}`
 
     if (!messageSchema.paths.hasOwnProperty(key)) messageSchema.add(schema);
-    firstMessage = Object.assign(schema, firstMessage)
+    message = Object.assign(schema, message)
+    console.log(message);
 
-    for (i in firstMessage) {
-      if (typeof firstMessage[i] === "object") {
-        for (n in firstMessage[i]) {
-          firstMessage[i][n] = req.body[n]
+    for (i in message) {
+      if (typeof message[i] === "object") {
+        for (n in message[i]) {
+          message[i][n] = req.body[n]
         };
       };
-      if (typeof firstMessage[i] !== "object") {
-        firstMessage[i] = req.body[i]
+      if (typeof message[i] !== "object") {
+        message[i] = req.body[i]
       }
     };
-    return firstMessage
+    return message
   }
 
-  if (req.body.messageType === 'form-init') display(formInitSchema)
-  if (req.body.messageType === 'payment') display(paymentSchema)
+  if (req.body.messageType === 'form-init') insertMessage(formInitSchema)
+  if (req.body.messageType === 'form-revision') insertMessage(formRevisionSchema)
+  if (req.body.messageType === 'payment') insertMessage(paymentSchema)
 
+  message = new Message(message);
 
+  // await message.save();
 
-  firstMessage = new Message(firstMessage);
-
-  await firstMessage.save();
-
-  res.send(firstMessage)
+  res.send(message)
 });
 
 module.exports = router;

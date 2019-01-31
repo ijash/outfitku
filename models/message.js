@@ -31,7 +31,8 @@ const messageSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now()
-  }
+  },
+  content: String
 });
 
 messageSchema.methods.generateBody = function() {
@@ -45,35 +46,43 @@ messageSchema.methods.generateBody = function() {
 }
 
 const Message = mongoose.model('message', messageSchema);
-const FormInit = mongoose.model('FormInit', formInit);
-const FormRevision = mongoose.model('FormModel', formRevision);
-const Payment = mongoose.model('Payment', payment);
 
-function validateMessage(message) {
-
+function validateFormInit(formInit) {
   const formInitSchema = {
     formInitNum: Joi.number(),
     name: Joi.string(),
     form: Joi.string()
   }
+  return Joi.validate(formInit, formInitSchema)
+}
+
+function validateFormRevision(formRevision) {
   const formRevisionSchema = {
     formRevisionNum: Joi.number(),
     name: Joi.string(),
     form: Joi.string()
   }
+  return Joi.validate(formRevision, formRevisionSchema)
+}
+
+function validatePayment(payment) {
   const paymentSchema = {
     paymentNum: Joi.number(),
     price: Joi.number(),
     paidOff: Joi.boolean()
   }
+  return Joi.validate(payment, paymentSchema)
+}
 
+function validateMessage(message) {
   const schema = {
     messageType: Joi.string().valid('form-init', 'form-revision', 'text', 'payment', 'image').required(),
     date: Joi.date(),
+    content: Joi.string(),
     name: Joi.string(),
     form: Joi.string(),
     price: Joi.number(),
-    paidOff: Joi.boolean()
+    paidOff: Joi.boolean(),
   };
 
   return Joi.validate(message, schema);
@@ -82,9 +91,9 @@ function validateMessage(message) {
 exports.formInitSchema = formInit;
 exports.formRevisionSchema = formRevision;
 exports.paymentSchema = payment
-exports.FormInit = FormInit;
-exports.FormRevision = FormRevision;
-exports.Payment = Payment;
 exports.messageSchema = messageSchema;
 exports.Message = Message;
-exports.validate = validateMessage;
+exports.validateMessage = validateMessage;
+exports.validateFormInit = validateFormInit;
+exports.validateFormRevision = validateFormRevision;
+exports.validatePayment = validatePayment;
