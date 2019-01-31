@@ -137,7 +137,7 @@ function validateOrder(order) {
     designer: Joi.objectId().required(),
     category: Joi.objectId(),
     // dateIssued: Joi.date(), //MM-DD-YYYY
-    // price: Joi.object.keys(priceSchema),
+    price: Joi.object.keys(priceSchema),
     // chatLog
     image: Joi.object().keys(imageSchema),
     dueDate: Joi.date(),
