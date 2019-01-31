@@ -2,6 +2,9 @@
 //DONE: give a design picture.
 const Joi = require('joi');
 const mongoose = require('mongoose');
+const config = require('config');
+
+const fileCDN = config.get('img')
 
 const categorySchema = new mongoose.Schema({
   name: {
@@ -13,8 +16,8 @@ const categorySchema = new mongoose.Schema({
   },
   mainImage: {
     type: String,
-    get: location => `${root}${location}`,
-    maxlength: 4096,
+    // get: location => `${fileCDN}${location}`,
+    maxlength: 100000,
     trim: true
   },
 });
@@ -24,7 +27,7 @@ const Category = mongoose.model('Category', categorySchema);
 function validateCategory(category) {
   const schema = {
     name: Joi.string().min(3).max(50).required(),
-    picture: Joi.string().max(4096)
+    mainImage: Joi.string().max(100000)
   };
 
   return Joi.validate(category, schema);

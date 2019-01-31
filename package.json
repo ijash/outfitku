@@ -25,6 +25,7 @@
     "express": "^4.16.4",
     "express-async-errors": "^3.1.1",
     "fawn": "^2.1.5",
+    "file-system": "^2.2.2",
     "joi": "^14.3.1",
     "joi-date-extensions": "^1.2.0",
     "joi-objectid": "^2.0.0",

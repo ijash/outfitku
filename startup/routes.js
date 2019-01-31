@@ -8,7 +8,9 @@ const categories = require('../routes/categories');
 const textiles = require('../routes/textiles');
 const messages = require('../routes/messages');
 
-module.exports = function (app) {
+module.exports = function(app) {
+  app.use('/public', express.static('public'));
+
   app.use(express.json());
   app.use('/api/auth', auth);
   app.use('/api/designers', designers);
