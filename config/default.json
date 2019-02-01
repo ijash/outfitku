@@ -2,5 +2,6 @@
     "jwtPrivateKey": "outfitku_jwtkey",
     "dbRemote": "mongodb://192.168.0.4/outfitku",
     "db": "mongodb://localhost/outfitku",
-    "img": "http://66.96.231.241/public/img/"
+    "getImg": "/public/img/",
+    "saveImg": "./public/img/"
 }

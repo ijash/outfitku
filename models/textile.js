@@ -1,5 +1,8 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
+const config = require('config');
+
+const fileCDN = `${config.get('getImg')}textiles/`;
 
 const textileSchema = new mongoose.Schema({
   name: {
@@ -12,7 +15,12 @@ const textileSchema = new mongoose.Schema({
     type: String,
     maxlength: 500
   },
-  //TO DO: picture url for textile
+  image: {
+    type: String,
+    get: location => `${fileCDN}${location}`,
+    maxlength: 4096,
+    trim: true
+  }
 });
 
 const Textile = mongoose.model('textile', textileSchema);
@@ -20,7 +28,8 @@ const Textile = mongoose.model('textile', textileSchema);
 function validateTextile(textile) {
   const schema = {
     name: Joi.string().min(3).max(50).required(),
-    comment: Joi.string().max(500)
+    comment: Joi.string().max(500),
+    image: Joi.string().max(4096)
   };
 
   return Joi.validate(textile, schema);

@@ -2,8 +2,7 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 const config = require('config');
 
-const root = config.get('img');
-
+const fileCDN = `${config.get('getImg')}designers/`;
 
 designerSchema = new mongoose.Schema({
   businessName: {
@@ -14,7 +13,7 @@ designerSchema = new mongoose.Schema({
   },
   picture: {
     type: String,
-    get: location => `${root}${location}`
+    get: location => `${fileCDN}${location}`
   },
   businessAddress: {
     type: String,
@@ -71,7 +70,7 @@ designerSchema = new mongoose.Schema({
         get: location => `${root}${location}`
       },
     })
-  },],
+  }, ],
 });
 
 let Designer = mongoose.model('Designer', designerSchema);
@@ -88,6 +87,7 @@ function validateDesigner(designer) {
   };
   return Joi.validate(designer, schema);
 };
+
 function validateMaintainer(maintainer) {
   const schema = {
     id: Joi.objectId(),

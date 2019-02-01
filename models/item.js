@@ -3,7 +3,7 @@ const { designerSchema } = require('./designer');
 const Joi = require('joi');
 const config = require('config')
 
-const fileCDN = config.get('img')
+const fileCDN = `${config.get('getImg')}items/`;
 
 const itemSchema = new mongoose.Schema({
   name: {

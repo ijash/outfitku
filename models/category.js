@@ -4,7 +4,7 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 const config = require('config');
 
-const fileCDN = config.get('img')
+const fileCDN = `${config.get('getImg')}categories/`;
 
 const categorySchema = new mongoose.Schema({
   name: {
@@ -16,10 +16,10 @@ const categorySchema = new mongoose.Schema({
   },
   mainImage: {
     type: String,
-    // get: location => `${fileCDN}${location}`,
-    maxlength: 100000,
+    get: location => `${fileCDN}${location}`,
+    maxlength: 4096,
     trim: true
-  },
+  }
 });
 
 const Category = mongoose.model('Category', categorySchema);
@@ -27,7 +27,7 @@ const Category = mongoose.model('Category', categorySchema);
 function validateCategory(category) {
   const schema = {
     name: Joi.string().min(3).max(50).required(),
-    mainImage: Joi.string().max(100000)
+    mainImage: Joi.string().max(4096)
   };
 
   return Joi.validate(category, schema);

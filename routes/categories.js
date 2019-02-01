@@ -1,10 +1,25 @@
 const express = require('express');
-const router = express.Router();
+const config = require('config');
 const auth = require('../middleware/auth');
 const { User } = require('../models/user');
 const { Category, validate } = require('../models/category');
 const fs = require('fs');
+const multer = require("multer");
 const _ = require('lodash');
+const router = express.Router();
+
+const path = `${config.get('saveImg')}categories/`
+
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) { // define target path
+    cb(null, path);
+  },
+  filename: function(req, file, cb) {
+    cb(null, `${file.originalname}`); // define saved file name
+  }
+});
+
+const upload = multer({ storage: storage }); // use limit: {fileSize: to define max fileSize}
 
 router.get('/', async (req, res) => {
   const category = await Category.find();
@@ -13,15 +28,11 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   const category = await Category.findById(req.params.id);
-
-  var img = new Buffer.from(category.mainImage, "base64")
-
-  await fs.writeFile("public/img/test.jpg", img, function(err) {})
-
-  res.send(category.name)
+  console.log(category.mainImage);
+  res.send(category)
 });
 
-router.post('/', auth, async (req, res) => {
+router.post('/', [auth, upload.single("mainImage")], async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -31,22 +42,14 @@ router.post('/', auth, async (req, res) => {
   const isDuplicate = await Category.findOne({ name: req.body.name.trim() })
   if (isDuplicate) return res.status(409).send('cannot insert duplicated entry, conflicting with an existing category.')
 
-  function base64_encode(file) {
-    // read binary data
-    var bitmap = fs.readFileSync(file);
-    // convert binary data to base64 encoded string
-    return new Buffer.from(bitmap).toString('base64');
-  }
-
-  var imgBuffer = base64_encode('public/img/ship3.jpg')
 
   const category = new Category({
     name: req.body.name,
-    mainImage: imgBuffer
+    mainImage: req.file.filename
   });
 
   await category.save();
-  res.send(category.name)
+  res.send(category)
 });
 
 router.delete('/', auth, async (req, res) => {
@@ -59,7 +62,7 @@ router.delete('/', auth, async (req, res) => {
   let category = await Category.findOne({ name: req.body.name.trim() })
   if (!category) return res.status(404).send('No category found with the given name');
 
-  category = await Category.findOneAndRemove({ name: req.body.name.trim() })
+  category = await Category.findOneAndDelete({ name: req.body.name.trim() })
 
   res.send(category)
 });

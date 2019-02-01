@@ -6,7 +6,7 @@ Joi = JoiBase.extend(JoiDate)
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
-const fileCDN = config.get('img')
+const fileCDN = `${config.get('getImg')}users/`;
 
 // size schema for Joi & user schema
 const sizeOf = {

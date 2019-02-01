@@ -7,7 +7,7 @@ messageSchema.add(paymentSchema);
 messageSchema.add(formInitSchema);
 messageSchema.add(formRevisionSchema);
 
-const fileCDN = config.get('img')
+const fileCDN = `${config.get('getImg')}orders/`
 
 const orderSchema = new mongoose.Schema({
   user: {
