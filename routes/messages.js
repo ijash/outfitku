@@ -9,13 +9,13 @@ const {
   formRevisionSchema,
   paymentSchema
 } = require('../models/message');
-
+const auth = require('../middleware/auth');
 const express = require('express');
 const mongoose = require('mongoose')
 const router = express.Router();
 // const validateMessage = require('../middleware/validateMessage'); // funciton dipindahin ke middleware
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   const { error } = validateMessage(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 

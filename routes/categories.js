@@ -11,11 +11,11 @@ const router = express.Router();
 const path = `${config.get('saveImg')}categories/`
 
 const storage = multer.diskStorage({
-  destination: function(req, file, cb) { // define target path
+  destination: function (req, file, cb) { // define target path
     cb(null, path);
   },
-  filename: function(req, file, cb) {
-    cb(null, `${req.body.name}.jpg`); // define saved file name
+  filename: function (req, file, cb) {
+    cb(null, `${req.body.name.trim()}.jpg`); // define saved file name
   }
 });
 
@@ -34,6 +34,7 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', [auth, upload.single("mainImage")], async (req, res) => {
   const { error } = validate(req.body);
+
   if (error) return res.status(400).send(error.details[0].message);
 
   const user = await User.findById(req.user._id).select('name isAdmin')
@@ -44,7 +45,7 @@ router.post('/', [auth, upload.single("mainImage")], async (req, res) => {
 
 
   const category = new Category({
-    name: req.body.name,
+    name: req.body.name.trim(),
     mainImage: req.file.filename
   });
 
