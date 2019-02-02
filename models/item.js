@@ -15,7 +15,7 @@ const itemSchema = new mongoose.Schema({
   category: {
     name: {
       type: String,
-      minlength: 5,
+      minlength: 3,
       maxlength: 50
     }
   },
@@ -79,7 +79,7 @@ const Item = mongoose.model('Item', itemSchema);
 //TODO: review and test the validation.
 function validateItem(item) {
   const schema = {
-    name: Joi.string().min(5).max(50).required(),
+    name: Joi.string().min(3).max(50).required(),
     category: Joi.objectId().required(),
     dateAdded: Joi.date(), //MM-DD-YYYY
     onDisplay: Joi.boolean(),

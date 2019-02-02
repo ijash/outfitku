@@ -1,9 +1,9 @@
 const express = require('express');
 const config = require('config');
+const fs = require('fs')
 const auth = require('../middleware/auth');
 const { User } = require('../models/user');
 const { Category, validate } = require('../models/category');
-const fs = require('fs');
 const multer = require("multer");
 const _ = require('lodash');
 const router = express.Router();
@@ -11,10 +11,13 @@ const router = express.Router();
 const path = `${config.get('saveImg')}categories/`
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) { // define target path
+  destination: function(req, file, cb) { // define target path
+    if (!fs.existsSync(`${path}`)) {
+      fs.mkdirSync(`${path}`)
+    }
     cb(null, path);
   },
-  filename: function (req, file, cb) {
+  filename: function(req, file, cb) {
     cb(null, `${req.body.name.trim()}.jpg`); // define saved file name
   }
 });

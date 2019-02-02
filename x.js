@@ -14,6 +14,8 @@ var fs = require('fs');
 //
 // fs.writeFile("test.jpg", img, function(err) {})
 
-var bitmap = fs.readFileSync('public/img/ship3.jpg');
-
-console.log(__filename);
+if (fs.existsSync('public/img/categories')) {
+  console.log(true);
+} else {
+  console.log(false);
+}

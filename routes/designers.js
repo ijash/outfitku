@@ -1,11 +1,31 @@
 const auth = require('../middleware/auth');
 const express = require('express');
 const mongoose = require('mongoose')
-const router = express.Router();
+const fs = require('fs');
+const config = require('config');
+const multer = require("multer");
 const _ = require('lodash');
-const { Designer, validate, validateMaintainer } = require('../models/designer');
+const { Designer, validate, validateMaintainer, validatePict } = require('../models/designer');
 const { User } = require('../models/user');
 const { Category } = require('../models/category');
+const router = express.Router();
+
+const path = `${config.get('saveImg')}designers/`
+
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) { // define target path
+    if (!fs.existsSync(`${path}/${req.params.id}`)) {
+      fs.mkdirSync(`${path}/${req.params.id}`)
+    }
+    cb(null, `${path}/${req.params.id}`);
+  },
+  filename: function(req, file, cb) {
+    cb(null, `${file.originalname.trim()}`); // define saved file name
+    // cb(null, `test.jpg`); // define saved file name
+  }
+});
+
+const upload = multer({ storage: storage }); // use limit: {fileSize: to define max fileSize}
 
 router.get('/', async (req, res) => {
 
@@ -27,7 +47,7 @@ router.post('/', async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const owner = await User.findById(req.user._id);
+  const owner = await User.findById(req.body.ownerId);
   if (!owner) return res.status(404).send('no user found with the given ID');
 
   const category = await Category.find({ '_id': { $in: req.body.expertise } }).select('name -_id')
@@ -55,6 +75,24 @@ router.post('/', async (req, res) => {
   await designer.save();
 
   res.send(designer)
+});
+
+router.post('/:id/picture', [auth, upload.single("picture")], async (req, res) => {
+  const { error } = validatePict(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  let designer = await Designer.findById(req.params.id);
+  if (!designer) return res.status(404).send('No designer found with the given ID');
+
+  const owner = await Designer.findById(req.params.id);
+  if (!(owner.account.owner._id == req.user._id)) return res.status(403).send('Unauthorized to modify this business');
+  if (!owner) return res.status(404).send('no user found with the given ID');
+
+  designer = await Designer.findByIdAndUpdate(req.params.id, {
+    picture: req.file.originalname.trim()
+  }, { new: true });
+
+  res.send(designer);
 });
 
 router.put('/:id', auth, async (req, res) => {
