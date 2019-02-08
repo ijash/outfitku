@@ -9,6 +9,8 @@ const {
   formRevisionSchema,
   paymentSchema
 } = require('../models/message');
+const { User } = require('../models/user');
+const { Designer } = require('../models/designer');
 const auth = require('../middleware/auth');
 const fs = require('fs');
 const config = require('config');
@@ -75,7 +77,34 @@ router.post('/:id', auth, async (req, res) => {
 
   await message.save();
 
-  res.send(message)
+  // find user
+  const user = await User.findById(req.user._id).select('name');
+  const designer = await Designer.findById(order.designer._id).select('businessName _id account.owner._id')
+  if (!user && !designer) return res.status(404).send("user not found");
+
+  let chatLog = {}
+
+  if (user._id.equals(order.user._id)) {
+    chatLog = {
+      seqNum: order.chatLog.length + 1,
+      from: user, //TODO: kasih pilihan buat update message sebagai user atau designer
+      message: message
+    }
+  } else if (user._id.equals(designer.account.owner._id) && designer._id.equals(order.designer._id)) {
+    chatLog = {
+      seqNum: order.chatLog.length + 1,
+      from: {
+        _id: designer._id,
+        name: designer.businessName
+      },
+      message: message
+    }
+  } else {
+    return res.status(403).send('Unauthorized to modify this order');
+  }
+  order.chatLog.push(chatLog) //DONE: things to do as user
+  await order.save()
+  res.send(order)
 });
 
 router.post('/:id/image', [auth, upload.single("content")], async (req, res) => {
@@ -91,7 +120,35 @@ router.post('/:id/image', [auth, upload.single("content")], async (req, res) => 
   });
 
   await message.save();
-  res.send(message)
+
+  // find user
+  const user = await User.findById(req.user._id).select('name');
+  const designer = await Designer.findById(order.designer._id).select('businessName _id account.owner._id')
+  if (!user && !designer) return res.status(404).send("user not found");
+
+  let chatLog = {}
+
+  if (user._id.equals(order.user._id)) {
+    chatLog = {
+      seqNum: order.chatLog.length + 1,
+      from: user, //TODO: kasih pilihan buat update message sebagai user atau designer
+      message: message
+    }
+  } else if (user._id.equals(designer.account.owner._id) && designer._id.equals(order.designer._id)) {
+    chatLog = {
+      seqNum: order.chatLog.length + 1,
+      from: {
+        _id: designer._id,
+        name: designer.businessName
+      },
+      message: message
+    }
+  } else {
+    return res.status(403).send('Unauthorized to modify this order');
+  }
+  order.chatLog.push(chatLog) //DONE: things to do as user
+  await order.save()
+  res.send(order)
 });
 
 module.exports = router;

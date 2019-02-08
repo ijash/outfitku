@@ -1,12 +1,6 @@
 # TODO
-- isi work di designer jadi itemId.
+- work di designer dibuat folder sendiri untuk image.
 
-- lengkapin route items dan tentuin destination folder sama nama picture
+- item mainImage masih masuk semua gambarnya
 
 - isi comment di textile (tentang textile)
-
-- post message dan route.chatlog dijadiin satu API
-
-- seqNum di order gaboleh sama(increament)
-
-- kasih pilihan user atau designer yang push chatlog

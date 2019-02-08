@@ -328,44 +328,8 @@ router.post('/:id/image/result', auth, async (req, res) => {
 });
 
 router.put('/:id', auth, async (req, res) => {
-  const { error } = validate(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-  // find order
-  const order = await Order.findById(req.params.id)
-  // validate order
-  if (!order) return res.status(404).send("order not found");
-  // find user
-  const user = await User.findById(req.user._id).select('name');
-  // validate user
-  if (!user) return res.status(404).send("user not found");
-  if (!user._id.equals(order.user._id)) return res.status(403).send('Unauthorized to modify this order');
-  // find designer
-  const designer = await Designer.findById(req.body.designer).select('businessName account.owner._id');
-  // validate designer
-  if (!designer) return res.status(404).send('designer not found');
-  if (designer.account.owner._id.equals(order.designer._id)) return res.status(403).send('Unauthorized to modify this order');
-  //get message
-  const message = await Message.findById(req.body.message).select('-__v')
-  //check message
-  if (!message) return res.status(404).send('message not found');
 
-  let chatLog = {
-    seqNum: req.body.seqNum,
-    from: user, //TODO: kasih pilihan buat update message sebagai user atau designer
-    message: message
-  }
-
-  if (user._id.equals(order.user._id)) {
-    order.chatLog.push(chatLog) //DONE: things to do as user
-    await order.save()
-    res.send(order)
-  }
-  if (designer.account.owner._id.equals(order.designer._id)) {
-    //TO DO: things to do as owner
-    res.send('data for owner');
-  }
-  // res.send(designer);
-  // send status
+  res.send('order')
 
 });
 

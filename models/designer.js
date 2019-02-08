@@ -61,18 +61,19 @@ designerSchema = new mongoose.Schema({
   },
   works: [{
     type: new mongoose.Schema({
+      _id: mongoose.Types.ObjectId,
       name: {
         type: String,
         required: true,
         trim: true,
         minlength: 3
       },
-      displayImage: {
+      mainImage: {
         type: String,
         get: location => `${fileCDN}${location}`
-      },
+      }
     })
-  },],
+  }],
 });
 
 let Designer = mongoose.model('Designer', designerSchema);
@@ -82,10 +83,8 @@ function validateDesigner(designer) {
     businessName: Joi.string().min(5).max(50).required(),
     businessAddress: Joi.string().min(5).max(500),
     businessEmail: Joi.string().min(5).max(255).email(),
-    // ownerId: Joi.objectId(),
     maintainerId: Joi.array().items(Joi.objectId()),
-    expertise: Joi.array().items(Joi.objectId().required()),
-    full: Joi.string()
+    expertise: Joi.array().items(Joi.objectId().required())
   };
   return Joi.validate(designer, schema);
 };
@@ -95,6 +94,14 @@ function validateMaintainer(maintainer) {
     id: Joi.objectId(),
   };
   return Joi.validate(maintainer, schema);
+};
+
+function validateWorks(works) {
+  const schema = {
+    itemId: Joi.array().items(Joi.objectId()),
+    mainImage: Joi.string().max(4096)
+  };
+  return Joi.validate(works, schema);
 };
 
 function validatePict(pict) {
@@ -107,5 +114,6 @@ function validatePict(pict) {
 exports.designerSchema = designerSchema;
 exports.Designer = Designer;
 exports.validate = validateDesigner;
+exports.validateWorks = validateWorks;
 exports.validatePict = validatePict;
 exports.validateMaintainer = validateMaintainer;
