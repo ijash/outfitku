@@ -76,7 +76,7 @@ function validatePayment(payment) {
 
 function validateMessage(message) {
   const schema = {
-    messageType: Joi.string().valid('form-init', 'form-revision', 'text', 'payment', 'image').required(),
+    messageType: Joi.string().valid('form-init', 'form-revision', 'text', 'payment', 'image'),
     date: Joi.date(),
     content: Joi.string(),
     name: Joi.string(),

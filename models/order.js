@@ -63,7 +63,6 @@ const orderSchema = new mongoose.Schema({
   image: {
     proposition: {
       type: String,
-      get: location => `${fileCDN}${location}`,
       trim: true,
       maxlength: 4096
     },
@@ -79,7 +78,7 @@ const orderSchema = new mongoose.Schema({
       trim: true,
       maxlength: 4096
     }],
-    prototype: [{
+    specimen: [{
       type: String,
       get: location => `${fileCDN}${location}`,
       trim: true,
@@ -90,7 +89,7 @@ const orderSchema = new mongoose.Schema({
       get: location => `${fileCDN}${location}`,
       trim: true,
       maxlength: 4096
-    }],
+    }]
   },
   dueDate: {
     type: Date,
@@ -124,33 +123,30 @@ function validateOrder(order) {
     }
   }
 
-  const imageSchema = {
-    proposition: Joi.string().max(4096),
-    design: Joi.array().items(Joi.string().max(4096)),
-    revision: Joi.array().items(Joi.string().max(4096)),
-    prototype: Joi.array().items(Joi.string().max(4096)),
-    result: Joi.array().items(Joi.string().max(4096))
-  }
-
   const schema = {
-    // userId: Joi.objectId().required(),
-    designer: Joi.objectId().required(),
-    category: Joi.objectId(),
-    // dateIssued: Joi.date(), //MM-DD-YYYY
-    // price: Joi.object.keys(priceSchema),
     seqNum: Joi.number(),
-    from: Joi.objectId(),
     message: Joi.objectId(),
-    image: Joi.object().keys(imageSchema),
+    designer: Joi.objectId(),
+    category: Joi.objectId(),
+    initial: Joi.number(),
     dueDate: Joi.date(),
-    finishedDate: Joi.date(),
-    isActive: Joi.boolean(),
-    isPublishable: Joi.boolean(),
     material: Joi.objectId()
   };
 
   return Joi.validate(order, schema);
 };
 
+function validateImage(img) {
+  const imageSchema = {
+    proposition: Joi.string().max(4096),
+    design: Joi.array().items(Joi.string().max(4096)),
+    revision: Joi.array().items(Joi.string().max(4096)),
+    specimen: Joi.array().items(Joi.string().max(4096)),
+    result: Joi.array().items(Joi.string().max(4096))
+  }
+  return Joi.validate(img, imageSchema);
+}
+
 exports.Order = Order;
 exports.validate = validateOrder;
+exports.validateImage = validateImage;

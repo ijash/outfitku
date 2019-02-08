@@ -69,7 +69,7 @@ designerSchema = new mongoose.Schema({
       },
       displayImage: {
         type: String,
-        get: location => `${root}${location}`
+        get: location => `${fileCDN}${location}`
       },
     })
   },],
