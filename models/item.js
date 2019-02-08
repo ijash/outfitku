@@ -25,7 +25,7 @@ const itemSchema = new mongoose.Schema({
   },
   onDisplay: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   image: {
     mainImage: {
@@ -50,6 +50,7 @@ const itemSchema = new mongoose.Schema({
   },
   testimonial: [{
     type: new mongoose.Schema({
+      _id: mongoose.Types.ObjectId,
       name: {
         type: String,
         required: true,
@@ -61,8 +62,12 @@ const itemSchema = new mongoose.Schema({
         min: 5,
         max: 255
       },
-      publishDate: Date,
-    })
+      publishDate: {
+        type: Date,
+        default: Date.now()
+      }
+    }),
+
   }],
   designer: new mongoose.Schema({
     businessName: {
@@ -81,24 +86,41 @@ function validateItem(item) {
   const schema = {
     name: Joi.string().min(3).max(50).required(),
     category: Joi.objectId().required(),
-    dateAdded: Joi.date(), //MM-DD-YYYY
+    comment: Joi.string().min(5).max(255),
+    publishDate: Joi.date(),
+    dateAdded: Joi.date(),
     onDisplay: Joi.boolean(),
-    image: {
-      mainImage: Joi.string().max(4096),
-      images: Joi.array().items(Joi.string().max(4096)),
-    },
     price: Joi.number().min(0).positive().max(10000000000),
     description: Joi.string().min(10).max(1000),
     testimonial: {
-      userId: Joi.array().items(Joi.objectId()),
+      userId: Joi.objectId(),
       comment: Joi.string().min(5).max(255),
     },
     publishDate: Joi.date(),
-    designer: Joi.objectId().required()
+    designer: Joi.objectId().required(),
+    userId: Joi.objectId().required()
   };
 
   return Joi.validate(item, schema);
 };
 
+function validateTesti(testi) {
+  const testimonial = {
+    userId: Joi.objectId(),
+    comment: Joi.string().min(5).max(255),
+  };
+  return Joi.validate(testi, testimonial)
+}
+
+function validateImage(img) {
+  const imageSchema = {
+    mainImage: Joi.string().max(4096),
+    images: Joi.array().items(Joi.string().max(4096)),
+  }
+  return Joi.validate(img, imageSchema)
+}
+
 exports.Item = Item;
+exports.validateTesti = validateTesti;
+exports.validateImage = validateImage;
 exports.validate = validateItem;

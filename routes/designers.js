@@ -5,8 +5,9 @@ const fs = require('fs');
 const config = require('config');
 const multer = require("multer");
 const _ = require('lodash');
-const { Designer, validate, validateMaintainer, validatePict } = require('../models/designer');
+const { Designer, validate, validateMaintainer, validatePict, validateWorks } = require('../models/designer');
 const { User } = require('../models/user');
+const { Item } = require('../models/item');
 const { Category } = require('../models/category');
 const router = express.Router();
 
@@ -96,26 +97,23 @@ router.post('/:id/picture', [auth, upload.single("picture")], async (req, res) =
   res.send(designer);
 });
 
-router.put('/:id', auth, async (req, res) => {
-  const { error } = validate(req.body);
+router.put('/:id/works', auth, async (req, res) => {
+  const { error } = validateWorks(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-  const designer = await Designer.findById(req.params.id);
-  if (!designer) return res.status(404).send('No designer found with the given ID');
 
-  if (!(designer.account.owner._id == req.user._id)) return res.status(403).send('Unauthorized to modify this business');
+  const item = await Item.findById(req.body.itemId);
 
+  const designer = await Designer.findById(req.params.id)
 
-  const updater = {
-    businessName: req.body.businessName,
-    picture: req.body.picture,
-    businessAddress: req.body.businessAddress,
-    businessEmail: req.body.businessEmail,
+  if (!designer) return res.status(404).send("designer not found");
+
+  let works = {
+    name: item.name,
+    mainImage: item.image.mainImage
   }
-
-  Object.assign(designer, updater);
-  const result = await designer.save();
-  return res.send(result);
-
+  designer.works.push(works)
+  await designer.save()
+  res.send(designer);
 });
 //DONE: add route post /:id/maintainer
 router.post('/:id/maintainers', auth, async (req, res) => {
