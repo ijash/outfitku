@@ -13,13 +13,13 @@ const router = express.Router();
 const path = `${config.get('saveImg')}designers/`
 
 const storage = multer.diskStorage({
-  destination: function(req, file, cb) { // define target path
+  destination: function (req, file, cb) { // define target path
     if (!fs.existsSync(`${path}/${req.params.id}`)) {
       fs.mkdirSync(`${path}/${req.params.id}`)
     }
     cb(null, `${path}/${req.params.id}`);
   },
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     cb(null, `${file.originalname.trim()}`); // define saved file name
     // cb(null, `test.jpg`); // define saved file name
   }
@@ -117,7 +117,7 @@ router.put('/:id', auth, async (req, res) => {
   return res.send(result);
 
 });
-//DONE: add route post /:id/maintainer
+
 router.post('/:id/maintainers', auth, async (req, res) => {
   const { error } = validateMaintainer(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -143,7 +143,7 @@ router.post('/:id/maintainers', auth, async (req, res) => {
 
   res.send(designer.account.maintainers)
 })
-//DONE: add route delete /:id/maintainer
+
 router.delete('/:id/maintainers', auth, async (req, res) => {
   const { error } = validateMaintainer(req.body);
   if (error) return res.status(400).send(error.details[0].message);
