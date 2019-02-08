@@ -70,7 +70,7 @@ designerSchema = new mongoose.Schema({
         get: location => `${root}${location}`
       },
     })
-  }, ],
+  },],
 });
 
 let Designer = mongoose.model('Designer', designerSchema);
@@ -80,7 +80,7 @@ function validateDesigner(designer) {
     businessName: Joi.string().min(5).max(50).required(),
     businessAddress: Joi.string().min(5).max(500),
     businessEmail: Joi.string().min(5).max(255).email(),
-    ownerId: Joi.objectId().required(),
+    // ownerId: Joi.objectId(),
     maintainerId: Joi.array().items(Joi.objectId()),
     expertise: Joi.array().items(Joi.objectId().required()),
     full: Joi.string()

@@ -23,7 +23,7 @@ router.get('/:id', async (req, res) => {
   res.send(designer)
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -38,6 +38,7 @@ router.post('/', async (req, res) => {
 
   //TO DO: give 'not found' warning for wrong maintainer ID
   const maintainers = await User.find({ '_id': { $in: req.body.maintainerId } }).select('_id name')
+
 
   let designer = {
     businessName: req.body.businessName,
