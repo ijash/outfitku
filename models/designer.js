@@ -13,7 +13,9 @@ designerSchema = new mongoose.Schema({
   },
   picture: {
     type: String,
-    get: location => `${fileCDN}${location}`
+    maxlength: 4096,
+    trim: true
+    // get: location => `${fileCDN}${location}`
   },
   businessAddress: {
     type: String,
@@ -95,7 +97,15 @@ function validateMaintainer(maintainer) {
   return Joi.validate(maintainer, schema);
 };
 
+function validatePict(pict) {
+  const schema = {
+    picture: Joi.string().max(4096)
+  };
+  return Joi.validate(pict, schema);
+}
+
 exports.designerSchema = designerSchema;
 exports.Designer = Designer;
 exports.validate = validateDesigner;
+exports.validatePict = validatePict;
 exports.validateMaintainer = validateMaintainer;

@@ -40,7 +40,7 @@ userSchema = new mongoose.Schema({
   },
   profPict: {
     type: String,
-    get: location => `${fileCDN}${location}`,
+    // get: location => `${fileCDN}${location}`,
     trim: true,
     maxlength: 4096
   },
@@ -231,7 +231,6 @@ function validateUser(user) {
 
   const schema = {
     name: Joi.string().min(5).max(50).required(),
-    profPict: Joi.string().max(4096),
     password: Joi.string().min(5).max(128).required(),
     email: Joi.string().min(5).max(255).required().email(),
     birthDate: Joi.date().required(), //MM-DD-YYYY
@@ -244,5 +243,13 @@ function validateUser(user) {
   return Joi.validate(user, schema);
 };
 
+function validateProfPict(pict) {
+  const schema = {
+    profPict: Joi.string().max(4096)
+  };
+  return Joi.validate(pict, schema);
+}
+
 exports.User = User
 exports.validate = validateUser;
+exports.validatePict = validateProfPict;
