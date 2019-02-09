@@ -37,6 +37,16 @@ router.get('/', async (req, res) => {
   res.send(designers)
 });
 
+router.get('/owner', auth, async (req, res) => {
+
+  // const result = await User.findById(req.user._id).select('-password -__v');
+  // console.log(result);
+  const business = await Designer.findOne({ 'account.owner._id': req.user._id }).select('_id businessName');
+  // console.log(business);
+
+  res.send(business)
+});
+
 router.get('/:id', async (req, res) => {
 
   //TO DO: exclude mantainer if empty
@@ -79,6 +89,9 @@ router.post('/', auth, async (req, res) => {
 
   res.send(designer)
 });
+
+
+
 
 router.post('/:id/picture', [auth, upload.single("picture")], async (req, res) => {
   const { error } = validatePict(req.body);
