@@ -36,18 +36,10 @@ router.get('/', auth, async (req, res) => {
 });
 
 router.get('/:id', auth, async (req, res) => {
-  // find user
-  // validate user
-  // find designer
-  // validate designer
-  // find order
-  // validate designer
-  // validate user by comparing with current order.user OR current designer.owner to see if the user is the owner or buyer. others can't see or modify.
-
-  // edit the order
-
-  // send status
-  res.send('work in progress..........')
+  const order = await Order.findById(req.params.id)
+    .select('-__v')
+    .sort({ dateIssued: 1 });
+  res.send(order)
 });
 
 router.post('/', auth, async (req, res) => {
@@ -57,10 +49,10 @@ router.post('/', auth, async (req, res) => {
   const user = await User.findById(req.user._id).select('name');
   //check user
   if (!user) return res.status(404).send("user not found");
-  //get category
-  const category = await Category.findById(req.body.category).select('name');
-  //check category
-  if (!category) return res.status(404).send("category not found");
+  // //get category
+  // const category = await Category.findById(req.body.category).select('name');
+  // //check category
+  // if (!category) return res.status(404).send("category not found");
   //get designer
   const designer = await Designer.findById(req.body.designer).select('businessName account.owner._id');
   //check designer
@@ -72,7 +64,6 @@ router.post('/', auth, async (req, res) => {
   const order = new Order({
     user: user,
     designer: designer,
-    category: category,
     price: {
       initial: req.body.initial
     },
