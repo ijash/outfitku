@@ -11,13 +11,13 @@ const router = express.Router();
 const path = `${config.get('saveImg')}categories/`
 
 const storage = multer.diskStorage({
-  destination: function(req, file, cb) { // define target path
+  destination: function (req, file, cb) { // define target path
     if (!fs.existsSync(`${path}`)) {
       fs.mkdirSync(`${path}`)
     }
     cb(null, path);
   },
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     cb(null, `${req.body.name.trim()}.jpg`); // define saved file name
   }
 });
@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }); // use limit: {fileSize: to define max fileSize}
 
 router.get('/', async (req, res) => {
-  const category = await Category.find();
+  const category = await Category.find().sort({ name: 1 });
   res.send(category)
 });
 
