@@ -72,6 +72,10 @@ router.post('/', auth, async (req, res) => {
   // order save
   await order.save();
 
+  if (!fs.existsSync(`${path}`)) {
+    fs.mkdirSync(`${path}`)
+  }
+
   if (!fs.existsSync(`${path}${order._id}`)) {
     fs.mkdirSync(`${path}${order._id}`)
   }
