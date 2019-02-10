@@ -13,14 +13,32 @@ const router = express.Router();
 
 const path = `${config.get('saveImg')}designers/`
 
+
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) { // define target path
-    if (!fs.existsSync(`${path}/${req.params.id}`)) {
-      fs.mkdirSync(`${path}/${req.params.id}`)
+  destination: function(req, file, cb) { // define target path
+    const imgPath = `${path}${req.params.id}`
+
+    if (!fs.existsSync(`${path}`)) {
+      fs.mkdirSync(`${path}`)
     }
-    cb(null, `${path}/${req.params.id}`);
+    if (!fs.existsSync(imgPath)) {
+      fs.mkdirSync(imgPath)
+    }
+    if (!fs.existsSync(`${imgPath}/main`)) {
+      fs.mkdirSync(`${imgPath}/main`)
+    }
+    fs.readdir(`${imgPath}/main`, (err, files) => {
+      if (err) throw err;
+
+      for (const file of files) {
+        fs.unlink(`${imgPath}/main/${file}`, err => {
+          if (err) throw err;
+        });
+      }
+    });
+    cb(null, `${imgPath}/main`);
   },
-  filename: function (req, file, cb) {
+  filename: function(req, file, cb) {
     cb(null, `${file.originalname.trim()}`); // define saved file name
     // cb(null, `test.jpg`); // define saved file name
   }
