@@ -42,7 +42,7 @@ const orderSchema = new mongoose.Schema({
   },
   dateIssued: {
     type: Date,
-    default: Date.now()
+    default: Date.now
   },
   price: {
     total: Number,

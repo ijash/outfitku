@@ -30,7 +30,7 @@ const messageSchema = new mongoose.Schema({
   },
   date: {
     type: Date,
-    default: Date.now()
+    default: Date.now
   },
   content: String
 });
@@ -77,7 +77,6 @@ function validatePayment(payment) {
 function validateMessage(message) {
   const schema = {
     messageType: Joi.string().valid('form-init', 'form-revision', 'text', 'payment', 'image'),
-    date: Joi.date(),
     content: Joi.string(),
     name: Joi.string(),
     form: Joi.string(),
