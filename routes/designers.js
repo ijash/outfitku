@@ -80,7 +80,7 @@ router.post('/', auth, async (req, res) => {
   const owner = await User.findById(req.user._id);
   if (!owner) return res.status(404).send('no user found with the given ID');
 
-  const category = await Category.find({ '_id': { $in: req.body.expertise } }).select('name -_id')
+  const category = await Category.find({ '_id': { $in: req.body.expertise } }).select('name _id')
   if (category.length < 1) return res.status(404).send('no category found with the given ID');
 
   const businessAccount = await Designer.findOne({ "account.owner._id": owner._id });

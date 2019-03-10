@@ -61,30 +61,30 @@ const orderSchema = new mongoose.Schema({
     message: messageSchema
   }],
   image: {
-    proposition: {
+    proposition: { // gambar awal
       type: String,
       trim: true,
       maxlength: 4096
     },
-    design: [{
+    design: [{ // design dari designer
       type: String,
       get: location => `${fileCDN}${location}`,
       trim: true,
       maxlength: 4096
     }],
-    revision: [{
+    revision: [{ // revisi gambar dari designer
       type: String,
       get: location => `${fileCDN}${location}`,
       trim: true,
       maxlength: 4096
     }],
-    specimen: [{
+    specimen: [{ // prototype
       type: String,
       get: location => `${fileCDN}${location}`,
       trim: true,
       maxlength: 4096
     }],
-    result: [{
+    result: [{ // hasil akhir
       type: String,
       get: location => `${fileCDN}${location}`,
       trim: true,
@@ -105,7 +105,7 @@ const orderSchema = new mongoose.Schema({
     default: false
   },
   material: new mongoose.Schema([{
-    name: String, // get id from textile
+    name: String,
     comment: String
   }])
 });

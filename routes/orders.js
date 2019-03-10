@@ -49,10 +49,10 @@ router.post('/', auth, async (req, res) => {
   const user = await User.findById(req.user._id).select('name');
   //check user
   if (!user) return res.status(404).send("user not found");
-  // //get category
-  // const category = await Category.findById(req.body.category).select('name');
-  // //check category
-  // if (!category) return res.status(404).send("category not found");
+  //get category
+  const category = await Category.findById(req.body.category).select('name');
+  //check category
+  if (!category) return res.status(404).send("category not found");
   //get designer
   const designer = await Designer.findById(req.body.designer).select('businessName account.owner._id');
   //check designer
@@ -64,6 +64,7 @@ router.post('/', auth, async (req, res) => {
   const order = new Order({
     user: user,
     designer: designer,
+    category: category,
     price: {
       initial: req.body.initial
     },

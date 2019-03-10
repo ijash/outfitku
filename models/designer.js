@@ -51,14 +51,16 @@ designerSchema = new mongoose.Schema({
       })
     }]
   },
-  expertise: {
-    type: Array,
-    name: {
-      type: String,
-      minlength: 5,
-      maxlength: 50
-    }
-  },
+  expertise: [{
+    type: new mongoose.Schema({
+      _id: mongoose.Types.ObjectId,
+      name: {
+        type: String,
+        minlength: 3,
+        maxlength: 50
+      }
+    })
+  }],
   works: [{
     type: new mongoose.Schema({
       _id: mongoose.Types.ObjectId,
